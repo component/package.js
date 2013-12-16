@@ -1,10 +1,18 @@
+BIN = ./node_modules/.bin/
+
+build:
+	@mkdir -p build
+	@$(BIN)regenerator \
+		--include-runtime \
+		lib/package.js > build/package.js
 
 node_modules: package.json
 	@npm install
 
 test: node_modules
-	@./node_modules/.bin/mocha \
+	@$(BIN)mocha \
+		--harmony-generators \
 		--require should \
 		--reporter spec
 
-.PHONY: test
+.PHONY: build test

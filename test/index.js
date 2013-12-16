@@ -1,6 +1,7 @@
 
 var Package = require('..');
 var path = require('path');
+var fs = require('fs');
 
 var pkg;
 var repo = 'component/tip';
@@ -40,4 +41,21 @@ describe('Package.js', function () {
       pkg.url('index.js').should.eql('https://raw.github.com/' + repo + '/' + version + '/index.js');
     });
   });
+
+  describe('Install', function () {
+    var dest = path.join(__dirname, '..', 'components')
+    var folder = path.join(dest, 'component-domify')
+    var pkg = new Package('component/domify', '1.1.1', {
+      dest: dest
+    })
+
+    it('should install', function (done) {
+      pkg.end(function (err) {
+        if (err) return done(err);
+        fs.statSync(path.join(folder, 'component.json'))
+        fs.statSync(path.join(folder, 'index.js'))
+        done();
+      })
+    })
+  })
 });
