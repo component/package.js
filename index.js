@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -177,10 +176,11 @@ Package.prototype.getJSON = function(fn){
 
   debug('fetching %s', url);
   var req = request.get(url);
-  req.set('Accept-Encoding', 'gzip');
 
   // Add proxy
   if (this.proxy) req.proxy(this.proxy);
+
+  req.set('Accept-Encoding', 'gzip');
 
   // authorize call
   var hostname = parse(url).hostname;
