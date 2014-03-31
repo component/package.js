@@ -124,7 +124,19 @@ Package.prototype.url = function(file){
     ? this.remote.href
     : this.remotes[0];
 
-  return remote + '/' + this.name + '/' + this.version + '/' + file;
+  var resolved_url = remote + '/' + this.name + '/' + this.version + '/' + file;
+
+  if(this.remote) {
+    switch(this.remote.host) {
+      case 'bitbucket.org':
+        resolved_url = remote + '/' + this.name + '/raw/' + this.version + '/' + file;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return resolved_url;
 };
 
 /**
