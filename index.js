@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -240,7 +239,18 @@ Package.prototype.getFiles = function(files, fn){
           var stream = fs.createWriteStream(dst);
           stream.on('error', done);
           res.pipe(stream);
-          res.on('end', done);
+          res.on('end', function () {
+            if (!res.headers['content-length']) {
+              return done();
+            }
+            fs.stat(dst, function (err, stats) {
+              if (err) return done(err);
+              if (stats.size === 0) {
+                return done(new Error(url + ' to ' + dst + ' produced empty file'));
+              }
+              done();
+            });
+          });
         });
 
         req.end();
