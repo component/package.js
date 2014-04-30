@@ -239,17 +239,14 @@ Package.prototype.getFiles = function(files, fn){
           var stream = fs.createWriteStream(dst);
           stream.on('error', done);
           res.pipe(stream);
-          res.on('end', function () {
+          stream.on('finish', function () {
             if (!res.headers['content-length']) {
               return done();
             }
-            fs.stat(dst, function (err, stats) {
-              if (err) return done(err);
-              if (stats.size === 0) {
-                return done(new Error(url + ' to ' + dst + ' produced empty file'));
-              }
-              done();
-            });
+            if (stream.bytesWritten !== parseInt(res.headers['content-length'])) {
+              return done(new Error(url + ' to ' + dst + ' produced wrong file'));
+            }
+            done();
           });
         });
 
