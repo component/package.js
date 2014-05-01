@@ -72,11 +72,11 @@ function Package(pkg, version, options) {
   this.proxy = options.proxy || process.env.https_proxy;
   this.version = version;
   this.concurrency = options.concurrency;
-  if (inFlight[this.slug]) {
+  if (inFlight[this.dest + this.slug]) {
     this.install = this.emit.bind(this, 'end');
     this.inFlight = true;
   }
-  inFlight[this.slug] = true;
+  inFlight[this.dest + this.slug] = true;
 }
 
 /**
