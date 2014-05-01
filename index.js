@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -73,11 +72,11 @@ function Package(pkg, version, options) {
   this.proxy = options.proxy || process.env.https_proxy;
   this.version = version;
   this.concurrency = options.concurrency;
-  if (inFlight[this.slug]) {
+  if (inFlight[this.dest + this.slug]) {
     this.install = this.emit.bind(this, 'end');
     this.inFlight = true;
   }
-  inFlight[this.slug] = true;
+  inFlight[this.dest + this.slug] = true;
 }
 
 /**
@@ -240,7 +239,15 @@ Package.prototype.getFiles = function(files, fn){
           var stream = fs.createWriteStream(dst);
           stream.on('error', done);
           res.pipe(stream);
-          res.on('end', done);
+          stream.on('finish', function () {
+            if (!res.headers['content-length']) {
+              return done();
+            }
+            if (stream.bytesWritten !== parseInt(res.headers['content-length'])) {
+              return done(new Error(url + ' to ' + dst + ' produced wrong file'));
+            }
+            done();
+          });
         });
 
         req.end();
